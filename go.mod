@@ -1,4 +1,4 @@
-module llog
+module github.com/shenjing023/llog
 
 go 1.15
 
