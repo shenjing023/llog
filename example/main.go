@@ -3,8 +3,8 @@ package main
 import (
 	// nested "github.com/antonfisher/nested-logrus-formatter"
 
-	// log "github.com/shenjing023/llog"
-	log "github.com/sirupsen/logrus"
+	log "github.com/shenjing023/llog"
+	// log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -19,19 +19,21 @@ func main() {
 	// 	fmt.Errorf("init log error %v", err)
 	// 	return
 	// }
-	// log.SetConsoleLogger(
-	// 	log.WithCaller(true),
-	// 	log.WithLevel(log.TraceLevel),
-	// 	// log.WithMaxAge(30*time.Second),
-	// )
-	log.SetReportCaller(true)
+	log.SetConsoleLogger(
+		log.WithCaller(true),
+		log.WithLevel(log.TraceLevel),
+		// log.WithJSON(true),
+		// log.WithMaxAge(30*time.Second),
+	)
+	// log.SetReportCaller(true)
 
 	// 打印日志
-	log.Debug("调试信息")
+	// log.Debug("调试信息")
+	log.WithField("component", "rest").Warn("warn message")
 	log.Info("提示信息")
-	log.Warn("警告信息")
+	// log.Warn("警告信息")
 	log.Error("错误信息")
-	log.Printf("hello world")
+	// log.Printf("hello world")
 	log.WithField("component", "rest").Warn("warn message")
 	log.WithFields(log.Fields{
 		"animal": "walrus",
@@ -60,4 +62,5 @@ func main() {
 	// }
 	// f()
 	// wg.Wait()
+
 }

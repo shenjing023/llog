@@ -130,17 +130,6 @@ func WithRotationTime(d time.Duration) Option {
 	}
 }
 
-// SetLevel sets the standard logger level.
-// func SetLevel(level logrus.Level) {
-// 	std.SetLevel(level)
-// }
-
-// SetReportCaller sets whether the standard logger will include the calling
-// method as a field.
-// func SetReportCaller(include bool) {
-// 	std.SetReportCaller(include)
-// }
-
 // Trace logs a message at level Trace on the standard logger.
 func Trace(args ...interface{}) {
 	std.Trace(args...)

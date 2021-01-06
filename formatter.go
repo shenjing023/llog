@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
@@ -32,6 +33,11 @@ const (
 	s1  = `000000000011111111112222222222333333333344444444445555555555`
 	s2  = `012345678901234567890123456789012345678901234567890123456789`
 	ns1 = `0123456789`
+
+	logrusPackage      = "github.com/sirupsen/logrus"
+	llogPackage        = "github.com/shenjing023/llog"
+	minimumCallerDepth = 4
+	maximumCallerDepth = 25
 )
 
 // Fields type, used to pass to `WithFields`.
@@ -61,7 +67,8 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	// caller
 	if entry.HasCaller() {
-		fmt.Fprintf(b, "(%s:%d)", entry.Caller.File, entry.Caller.Line)
+		c := getCaller()
+		fmt.Fprintf(b, "(%s:%d)", c.File, c.Line)
 	}
 
 	// level
@@ -103,7 +110,8 @@ func (f *Formatter) jsonFormat(entry *logrus.Entry) ([]byte, error) {
 	data["level"] = entry.Level.String()
 	data["msg"] = entry.Message
 	if entry.HasCaller() {
-		data["file"] = fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
+		c := getCaller()
+		data["file"] = fmt.Sprintf("%s:%d", c.File, c.Line)
 	}
 
 	var b *bytes.Buffer
@@ -188,4 +196,39 @@ func formatTime(when time.Time) []byte {
 	//buf[23] = ' '
 
 	return buf[0:]
+}
+
+// getPackageName reduces a fully qualified function name to the package name
+// There really ought to be to be a better way...
+func getPackageName(f string) string {
+	for {
+		lastPeriod := strings.LastIndex(f, ".")
+		lastSlash := strings.LastIndex(f, "/")
+		if lastPeriod > lastSlash {
+			f = f[:lastPeriod]
+		} else {
+			break
+		}
+	}
+
+	return f
+}
+
+func getCaller() *runtime.Frame {
+	// Restrict the lookback frames to avoid runaway lookups
+	pcs := make([]uintptr, maximumCallerDepth)
+	depth := runtime.Callers(minimumCallerDepth, pcs)
+	frames := runtime.CallersFrames(pcs[:depth])
+
+	for f, again := frames.Next(); again; f, again = frames.Next() {
+		pkg := getPackageName(f.Function)
+
+		// If the caller isn't part of this package, we're done
+		if pkg != logrusPackage && pkg != llogPackage {
+			return &f //nolint:scopelint
+		}
+	}
+
+	// if we got here, we failed to find the caller's context
+	return nil
 }
