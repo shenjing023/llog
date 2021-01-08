@@ -91,7 +91,7 @@ func WithCaller(include bool) Option {
 // WithColor set formatter output color
 func WithColor(b bool) Option {
 	return func(o *options) {
-		o.formatter.DisableColors = b
+		o.formatter.DisableColors = !b
 	}
 }
 
