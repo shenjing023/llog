@@ -8,7 +8,7 @@ import (
 	log "github.com/shenjing023/llog"
 )
 
-func main(
+func main(){
     log.SetConsoleLogger(
 		log.WithCaller(true),
 		log.WithLevel(log.TraceLevel),
@@ -22,7 +22,7 @@ func main(
 		"a": "b",
 		"c": 1,
 	}).Info("xxxxxxxxxxxxxxx")
-)
+}
 ```
 ![20210106233252.png](https://i.loli.net/2021/01/06/PYOWf6QhXLqmAz2.png)
 
@@ -31,7 +31,7 @@ import (
 	log "github.com/shenjing023/llog"
 )
 
-func main(
+func main(){
     log.SetConsoleLogger(
 		log.WithLevel(log.TraceLevel),
         log.WithJSON(true),
@@ -45,7 +45,7 @@ func main(
 		"a": "b",
 		"c": 1,
 	}).Info("xxxxxxxxxxxxxxx")
-)
+}
 ```
 ```
 {"level":"debug","msg":"调试信息","time":"2021/01/06 23:36:14.730"}
