@@ -40,6 +40,7 @@ var (
 type options struct {
 	formatter Formatter
 	ops       []rotatelogs.Option
+	console   bool // output to console or not when set file logger
 }
 
 type Option func(o *options)
@@ -67,7 +68,10 @@ func SetFileLogger(format string, opts ...Option) (err error) {
 	if err != nil {
 		return err
 	}
-	writers := []io.Writer{rotate, os.Stdout}
+	writers := []io.Writer{rotate}
+	if op.console {
+		writers = append(writers, os.Stdout)
+	}
 	twoWriters := io.MultiWriter(writers...)
 	std.SetFormatter(&op.formatter)
 	std.SetOutput(twoWriters)
@@ -127,6 +131,13 @@ func WithMaxAge(d time.Duration) Option {
 func WithRotationTime(d time.Duration) Option {
 	return func(o *options) {
 		o.ops = append(o.ops, rotatelogs.WithRotationTime(d))
+	}
+}
+
+// WithConsole set formatter output to console
+func WithConsole(b bool) Option {
+	return func(o *options) {
+		o.console = b
 	}
 }
 
