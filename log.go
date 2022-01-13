@@ -78,6 +78,10 @@ func SetFileLogger(format string, opts ...Option) (err error) {
 	return err
 }
 
+func SetLevel(l Level) {
+	std.SetLevel(logrus.Level(l))
+}
+
 // WithLevel set log level
 func WithLevel(l Level) Option {
 	return func(o *options) {
